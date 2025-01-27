@@ -6,6 +6,11 @@
 	Source code: https://github.com/cheatmine/lpi-prim/
 ]]
 
+-- Don't make another instance of Prim
+if getgenv().Prim then
+	return getgenv().Prim
+end
+
 --/ Services
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -149,4 +154,5 @@ end
 --/ Direct access to SyncAPI, Handle, Tool
 Prim.GetF3X = getF3X
 
+getgenv().Prim = Prim -- Expose the API
 return Prim
