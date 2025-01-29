@@ -151,6 +151,82 @@ Prim.Color = function(data: {{Part: BasePart, Color: Color3}})
 	F3X.SyncAPI:InvokeServer("SyncColor", data)
 end
 
+export type Decoration = "Smoke"|"Fire"|"Sparkles";
+export type SmokeDecoration = {
+	Color: Color3,
+	Opacity: number,
+	RiseVelocity: number,
+	Size: number
+}
+export type FireDecoration = {
+	Color: Color3,
+	SecondaryColor: Color3,
+	Heat: number,
+	Size: number
+}
+export type SparklesDecoration = {
+	SparkleColor: Color3
+}
+export type DecorationProperties =
+	| SmokeDecoration
+	| FireDecoration
+	| SparklesDecoration
+
+Prim.CreateDecorations = function(data: {{Part: BasePart, DecorationType: Decoration}})
+	local F3X: F3X = getF3X()
+	assert(type(data) == "table", "Decoration data must be a table of these elements {Part: BasePart, DecorationType: Decoration} (see docs for more info)")
+	F3X.SyncAPI:InvokeServer("CreateDecorations", data)
+end
+Prim.EditDecorations = function(data: {{Part: BasePart, DecorationType: Decoration, [string]: any}})
+	local F3X: F3X = getF3X()
+	assert(type(data) == "table", "Decoration data must be a table of these elements {Part: BasePart, DecorationType: Decoration, ...DecorationProperties} (see docs for more info)")
+	F3X.SyncAPI:InvokeServer("SyncDecorations", data)
+end
+
+Prim.CreateFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecoration}?)
+	local F3X: F3X = getF3X()
+	assert(type(data) == "table", "Parts argument must be a table of BasePart")
+	local ct = {}
+	for i, v in parts do
+		assert(typeof(v) == "Instance", "Table elements must be BasePart")
+		assert(v:IsA("BasePart"), "Table elements must be BasePart")
+		local ft = {Part = v, DecorationType = "Fire"}
+		if properties then
+			for i, v in properties[v] do
+				ft[i] = v
+			end
+		end
+		table.insert(ct, ft)
+	end
+	F3X.SyncAPI:InvokeServer("CreateDecorations", ct)
+	if properties then
+		F3X.SyncAPI:InvokeServer("SyncDecorations", ct)
+	end
+end
+Prim.EditFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecoration})
+	local F3X: F3X = getF3X()
+	assert(type(data) == "table", "Parts argument must be a table of BasePart")
+	assert(type(properties) == "table", "Properties argument must be a FireDecoration (see docs for more info)")
+	local ct = {}
+	for i, v in parts do
+		assert(typeof(v) == "Instance", "Parts table elements must be BasePart")
+		assert(v:IsA("BasePart"), "Parts table elements must be BasePart")
+		local ft = {Part = v, DecorationType = "Fire"}
+		for i, v in properties[v] do
+			ft[i] = v
+		end
+		table.insert(ct, ft)
+	end
+	F3X.SyncAPI:InvokeServer("SyncDecorations", ct)
+end
+
+Prim.CreatePart = function(pos: CFrame, shapeid: number?)
+	local shape = ({
+		"Normal", "Truss", "Wedge", "Corner", "Cylinder", "Ball", "Seat", "Vehicle Seat", "Spawn"
+	})[shapeid or 1]
+	return F3X.SyncAPI:InvokeServer(shape, pos)
+end
+
 --/ Direct access to SyncAPI, Handle, Tool
 Prim.GetF3X = getF3X
 
