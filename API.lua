@@ -128,7 +128,7 @@ local Prim = {}
 Prim.GetCharacter = getChar
 Prim.GetHumanoid = getHumanoid
 
---/ Vulnerability utilization
+--/ Vulnerability utilization & asset streaming
 Prim.QueuePartChangeAsync = addToQueue
 Prim.WaitForQueueFinish = function(): number
 	return finishedChanges:Wait()
@@ -136,6 +136,15 @@ end
 Prim.QueuePartChange = function(part: BasePart, changes: {[string]: any}): number
 	addToQueue(part, changes)
 	return Prim.WaitForQueueFinish()
+end
+
+Prim.StartStreaming = startStreaming
+Prim.StopStreaming = stopStreaming
+Prim.GetStreamed = function(): {[BasePart]: {string}}
+	return stream
+end
+Prim.IsStreamed = function(part: BasePart): (boolean, {string})
+	return ((not not stream[part]), stream[part])
 end
 
 Prim.DestroyInstances = function(ins: {Instance})
