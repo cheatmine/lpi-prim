@@ -40,7 +40,7 @@ local function getF3X(): F3X
 	return {
 		Tool = tool,
 		Handle = tool:FindFirstChild("Handle"),
-		SyncAPI = Handle["SyncAPl"]["ServerEndPoint"..utf8.char(0x200C)]
+		SyncAPI = tool["SyncAPl"]["ServerEndPoint"..utf8.char(0x200C)]
 	} :: F3X
 end
 
