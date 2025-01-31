@@ -272,12 +272,22 @@ Prim.EditFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecorat
 		assert(typeof(v) == "Instance", "Parts table elements must be BasePart")
 		assert(v:IsA("BasePart"), "Parts table elements must be BasePart")
 		local ft = {Part = v, DecorationType = "Fire"}
-		for i, v in properties[v] do
-			ft[i] = v
+		for property, value in properties[v] do
+			ft[property] = value
 		end
 		table.insert(ct, ft)
 	end
 	F3X.SyncAPI:InvokeServer("SyncDecorations", ct)
+end
+
+Prim.CreateTextures = function(parts: {BasePart}, face: Enum.NormalId, texturetype: "Texture"|"Decal", texture: string)
+	local F3X: F3X = getF3X()
+	local ct = {}
+	for i, v in parts do
+		table.insert(ct, {Part = v, Face = face, TextureType = texturetype, Texture = texture})
+	end
+	F3X.SyncAPI:InvokeServer("CreateTextures", ct)
+	F3X.SyncAPI:InvokeServer("SyncTexture", ct)
 end
 
 Prim.CreatePart = function(pos: CFrame, shapeid: number?): {BasePart}
@@ -290,11 +300,7 @@ end
 
 Prim.CloneParts = function(parts: {BasePart}): {BasePart}
 	local F3X: F3X = getF3X()
-	local t = {}
-	for _, part in parts do
-		table.insert(t, {Part = part})
-	end
-	return F3X.SyncAPI:InvokeServer(t)
+	return F3X.SyncAPI:InvokeServer(parts)
 end
 Prim.ClonePart = function(part: BasePart): BasePart
 	return Prim.CloneParts({part})
