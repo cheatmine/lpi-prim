@@ -144,7 +144,7 @@ Prim.GetStreamed = function(): {[BasePart]: {string}}
 	return stream
 end
 Prim.IsStreamed = function(part: BasePart): (boolean, {string})
-	return ((not not stream[part]), stream[part])
+	return (not not stream[part]), stream[part]
 end
 
 Prim.DestroyInstances = function(ins: {Instance})
@@ -170,6 +170,20 @@ end
 Prim.DestroyF3XHandle = function()
 	local F3X: F3X = getF3X()
 	Prim.DestroyInstance(F3X.Handle)
+end
+
+Prim.Weld = function(p0: BasePart, p1: BasePart): {Weld}
+	local F3X: F3X = getF3X()
+	-- if none are locked, or p0 is locked
+	if (p0.Locked and not p1.Locked) or (not p0.Locked and not p1.Locked) then
+		return F3X.SyncAPI:InvokeServer("CreateWelds", {p1}, p0)
+	-- if p1 is locked
+	elseif not p0.Locked and p1.Locked then
+		return F3X.SyncAPI:InvokeServer("CreateWelds", {p0}, p1)
+	-- if both are locked
+	else
+		error("Cannot weld two locked parts")
+	end
 end
 
 --/ Regular SyncAPI calls
@@ -266,11 +280,24 @@ Prim.EditFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecorat
 	F3X.SyncAPI:InvokeServer("SyncDecorations", ct)
 end
 
-Prim.CreatePart = function(pos: CFrame, shapeid: number?)
+Prim.CreatePart = function(pos: CFrame, shapeid: number?): {BasePart}
 	local shape = ({
 		"Normal", "Truss", "Wedge", "Corner", "Cylinder", "Ball", "Seat", "Vehicle Seat", "Spawn"
 	})[shapeid or 1]
+	local F3X: F3X = getF3X()
 	return F3X.SyncAPI:InvokeServer(shape, pos)
+end
+
+Prim.CloneParts = function(parts: {BasePart}): {BasePart}
+	local F3X: F3X = getF3X()
+	local t = {}
+	for _, part in parts do
+		table.insert(t, {Part = part})
+	end
+	return F3X.SyncAPI:InvokeServer(t)
+end
+Prim.ClonePart = function(part: BasePart): BasePart
+	return Prim.CloneParts({part})
 end
 
 --/ Direct access to SyncAPI, Handle, Tool
