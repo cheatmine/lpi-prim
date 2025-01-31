@@ -73,7 +73,7 @@ local function doChangesQueue()
 			end
 			surf[bypasskey] = value
 		end
-		table.insert({
+		table.insert(changes, {
 			Part = part,
 			Surfaces = surf
 		})
