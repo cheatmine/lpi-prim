@@ -49,6 +49,7 @@ local F3X: F3X = nil
 local queue: {[BasePart]: {[string]: any}} = {}
 local finishedChanges = Instance.new("BindableEvent", game:GetService("CoreGui"))
 finishedChanges.Name = "PrimAPI_FinishedChanges"
+
 local function addToQueue(part: BasePart, changes: {[string]: any})
 	assert(typeof(part) == "Instance", "part argument must be a BasePart")
 	assert(part:IsA("BasePart"), "part argument must be a BasePart")
@@ -59,7 +60,7 @@ local function clearQueue()
 	queue = {}
 end
 
-RunService.Heartbeat:Connect(function()
+local function doChangesQueue()
 	local changes = {}
 	for part, properties in queue do
 		local surf = {}
@@ -82,6 +83,42 @@ RunService.Heartbeat:Connect(function()
 		getF3X().SyncAPI:InvokeServer("SyncSurface", changes)
 	end
 	finishedChanges:Fire(#changes)
+end
+
+--/ Asset streaming
+local stream = {}
+
+local function startStreaming(parts: {BasePart}, properties: {string})
+	assert(type(parts) == "table", "Parts argument should be a table of BasePart")
+	assert(type(properties) == "table", "Properties argument should be a table of string")
+	for _, part in parts do
+		assert(typeof(part) == "Instance", "Parts table content should be of BasePart")
+		assert(part:IsA("BasePart"), "Parts table content should be of BasePart")
+		stream[part] = properties
+	end
+end
+
+local function stopStreaming(parts: {BasePart})
+	assert(type(parts) == "table", "Parts argument should be a table of BasePart")
+	for _, part in parts do
+		assert(typeof(part) == "Instance", "Parts table content should be of BasePart")
+		assert(part:IsA("BasePart"), "Parts table content should be of BasePart")
+		stream[part] = nil
+	end
+end
+
+--/ Heartbeat job
+RunService.Heartbeat:Connect(function()
+	for part, properties in stream do
+		if properties == nil then continue end
+		local proptable = {}
+		for _, property in properties do
+			proptable[property] = part[property]
+		end
+		addToQueue(part, proptable)
+	end
+
+	doChangesQueue()
 end)
 
 --/ Functions
