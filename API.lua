@@ -53,7 +53,7 @@ finishedChanges.Name = "PrimAPI_FinishedChanges"
 local function addToQueue(part: BasePart, changes: {[string]: any})
 	assert(typeof(part) == "Instance", "part argument must be a BasePart")
 	assert(part:IsA("BasePart"), "part argument must be a BasePart")
-	assert(part.Locked, "cannot make changes to a locked BasePart")
+	assert(not part.Locked, "cannot make changes to a locked BasePart")
 	queue[part] = changes
 end
 local function clearQueue()
@@ -158,7 +158,7 @@ Prim.DestroyPartsAsync = function(ins: {BasePart})
 	for _, v in ins do
 		assert(typeof(v) == "Instance", "Instance argument should be a table of BasePart.")
 		assert(v:IsA("BasePart"), "Cannot destroy a non-part instance. Use DestroyInstances() insead.")
-		assert(v.Locked, "Cannot destroy a locked part. Use DestroyInstances() instead.")
+		assert(not v.Locked, "Cannot destroy a locked part. Use DestroyInstances() instead.")
 		Prim.QueuePartChangeAsync(v, {Parent = nil})
 	end
 end
@@ -295,12 +295,12 @@ Prim.CreatePart = function(pos: CFrame, shapeid: number?): {BasePart}
 		"Normal", "Truss", "Wedge", "Corner", "Cylinder", "Ball", "Seat", "Vehicle Seat", "Spawn"
 	})[shapeid or 1]
 	local F3X: F3X = getF3X()
-	return F3X.SyncAPI:InvokeServer(shape, pos)
+	return F3X.SyncAPI:InvokeServer("CreatePart", shape, pos)
 end
 
 Prim.CloneParts = function(parts: {BasePart}): {BasePart}
 	local F3X: F3X = getF3X()
-	return F3X.SyncAPI:InvokeServer(parts)
+	return F3X.SyncAPI:InvokeServer("Clone", parts)
 end
 Prim.ClonePart = function(part: BasePart): BasePart
 	return Prim.CloneParts({part})
