@@ -35,7 +35,9 @@ local function getF3X(): F3X
 	local tool = char:FindFirstChild("F3X") or
 		Player.Backpack:FindFirstChild("F3X")
 	assert(tool, "No F3X tool present")
-	getHumanoid():EquipTool(tool)
+	if not char:FindFirstChild("F3X") then
+		getHumanoid():EquipTool(tool)
+	end
 
 	return {
 		Tool = tool,
