@@ -131,7 +131,7 @@ Prim.GetHumanoid = getHumanoid
 --/ Vulnerability utilization & asset streaming
 Prim.QueuePartChangeAsync = addToQueue
 Prim.WaitForQueueFinish = function(): number
-	return finishedChanges:Wait()
+	return finishedChanges.Event:Wait()
 end
 Prim.QueuePartChange = function(part: BasePart, changes: {[string]: any}): number
 	addToQueue(part, changes)
