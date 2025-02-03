@@ -213,39 +213,18 @@ Prim.Color = function(data: {{Part: BasePart, Color: Color3}})
 	F3X.SyncAPI:InvokeServer("SyncColor", data)
 end
 
-export type Decoration = "Smoke"|"Fire"|"Sparkles";
-export type SmokeDecoration = {
-	Color: Color3,
-	Opacity: number,
-	RiseVelocity: number,
-	Size: number
-}
-export type FireDecoration = {
-	Color: Color3,
-	SecondaryColor: Color3,
-	Heat: number,
-	Size: number
-}
-export type SparklesDecoration = {
-	SparkleColor: Color3
-}
-export type DecorationProperties =
-	| SmokeDecoration
-	| FireDecoration
-	| SparklesDecoration
-
-Prim.CreateDecorations = function(data: {{Part: BasePart, DecorationType: Decoration}})
+Prim.CreateDecorations = function(data: {{Part: BasePart, DecorationType: string}})
 	local F3X: F3X = getF3X()
 	assert(type(data) == "table", "Decoration data must be a table of these elements {Part: BasePart, DecorationType: Decoration} (see docs for more info)")
 	F3X.SyncAPI:InvokeServer("CreateDecorations", data)
 end
-Prim.EditDecorations = function(data: {{Part: BasePart, DecorationType: Decoration, [string]: any}})
+Prim.EditDecorations = function(data: {{Part: BasePart, DecorationType: string, [string]: any}})
 	local F3X: F3X = getF3X()
 	assert(type(data) == "table", "Decoration data must be a table of these elements {Part: BasePart, DecorationType: Decoration, ...DecorationProperties} (see docs for more info)")
 	F3X.SyncAPI:InvokeServer("SyncDecorations", data)
 end
 
-Prim.CreateFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecoration}?)
+Prim.CreateFire = function(parts: {BasePart}, properties: {[BasePart]: {[string]: any}}?)
 	local F3X: F3X = getF3X()
 	assert(type(data) == "table", "Parts argument must be a table of BasePart")
 	local ct = {}
@@ -265,7 +244,7 @@ Prim.CreateFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecor
 		F3X.SyncAPI:InvokeServer("SyncDecorations", ct)
 	end
 end
-Prim.EditFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecoration})
+Prim.EditFire = function(parts: {BasePart}, properties: {[BasePart]: {[string]: any}})
 	local F3X: F3X = getF3X()
 	assert(type(data) == "table", "Parts argument must be a table of BasePart")
 	assert(type(properties) == "table", "Properties argument must be a FireDecoration (see docs for more info)")
@@ -282,7 +261,7 @@ Prim.EditFire = function(parts: {BasePart}, properties: {[BasePart]: FireDecorat
 	F3X.SyncAPI:InvokeServer("SyncDecorations", ct)
 end
 
-Prim.CreateTextures = function(parts: {BasePart}, face: Enum.NormalId, texturetype: "Texture"|"Decal", texture: string)
+Prim.CreateTextures = function(parts: {BasePart}, face: Enum.NormalId, texturetype: string, texture: string)
 	local F3X: F3X = getF3X()
 	local ct = {}
 	for i, v in parts do
