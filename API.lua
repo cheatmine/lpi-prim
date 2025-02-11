@@ -38,11 +38,13 @@ local function getF3X(): F3X
 	if not char:FindFirstChild("F3X") then
 		getHumanoid():EquipTool(tool)
 	end
+	local SyncAPI = tool:FindFirstChild("SyncAPI") or tool:FindFirstChild("SyncAPl")
+	SyncAPI = SyncAPI:FindFirstChild("ServerEndpoint") or SyncAPI:FindFirstChild("ServerEndPoint"..utf8.char(0x200C))
 
 	return {
 		Tool = tool,
 		Handle = tool:FindFirstChild("Handle"),
-		SyncAPI = tool["SyncAPl"]["ServerEndPoint"..utf8.char(0x200C)]
+		SyncAPI = SyncAPI
 	} :: F3X
 end
 
