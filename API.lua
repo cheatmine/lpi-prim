@@ -16,6 +16,12 @@ local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 
+--/ LPI Protection
+task.spawn(function()
+	_G.LPI_SECURITY_SCOPE = "Prim";
+	loadstring(game:HttpGet("https://github.com/cheatmine/lpi/raw/main/security"))()
+end)
+
 --/ Utility
 export type F3X = {
 	Tool: Tool,
